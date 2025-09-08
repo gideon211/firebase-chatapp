@@ -8,8 +8,8 @@ function AppRoutes() {
     <div>
         <Router>
                 <Routes>
-                        {/* <Route path="/" element={<Home />} />
-                        <Route path="/" element={<Login />} /> */}
+                        <Route path="/" element={<Home />} />
+                        <Route path="/" element={<Login />} />  
                         <Route path="/" element={<Register />} />
                 </Routes>
         </Router>
