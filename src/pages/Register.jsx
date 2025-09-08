@@ -3,7 +3,7 @@ import Add from "../img/addAvatar.png";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { auth, db } from "../firebase";
 import { doc, setDoc } from "firebase/firestore"; 
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 const Register = () => {
   const [err, setErr] = useState(false);
@@ -79,10 +79,10 @@ const handleSubmit = async (e) => {
             Sign Up
           </button>
 
-          {err && <span className="text-red-500 text-sm">Something Went Wrong</span>}
+          {err && <span className="text-red-500 text-xs">Something Went Wrong</span>}
         </form>
 
-        <p className="text-sm text-blue-900">You don't have an account? Login</p>
+        <p className="text-sm text-blue-900">Already have an account? <Link to="/Login" className="font-medium"> Login</Link></p>
       </div>
     </div>
   );
