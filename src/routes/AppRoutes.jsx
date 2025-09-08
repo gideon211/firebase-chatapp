@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom"
+import { BrowserRouter, Routes, Route } from "react-router-dom"
 import Home from "../pages/Home"
 import Login from "../pages/Login"
 import Register from "../pages/Register"
@@ -6,13 +6,15 @@ import Register from "../pages/Register"
 function AppRoutes() {
   return (
     <div>
-        <Router>
+        <BrowserRouter>
                 <Routes>
-                        <Route path="/" element={<Home />} />
-                        <Route path="/" element={<Login />} />  
-                        <Route path="/" element={<Register />} />
-                </Routes>
-        </Router>
+                        <Route path="/">
+                                <Route index element={<Home />} />
+                                <Route path="Login" element={<Login />} />  
+                                <Route path="Register" element={<Register />} />
+                        </Route>
+                </Routes>    
+        </BrowserRouter>
     </div>
   )
 }
