@@ -1,6 +1,22 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
+import { useState, useEffect, useContext } from 'react'
+import { AuthContext } from '../context/AuthContext'
 
 const Chats = () => {
+        const [chats, SetChats] = useState([])
+        const {currentUser} = useContext(AuthContext)
+
+
+        useEffect(()=>{
+                const unsubscribe = onSnapshot(doc, (db, "userChats", currentUser.uid), (doc) => {
+                        SetChats(doc.data())
+                });
+
+                return () => {
+                        unsubscribe();
+                }        
+        }, [currentUser.uid]);
+
   return (
     <div>
 

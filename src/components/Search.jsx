@@ -10,63 +10,60 @@ const Search = () => {
   const [err, setErr] = useState(false);
   const { currentUser } = useContext(AuthContext);
 
-  // Search for user by displayName
   const handleSearch = async () => {
-    const q = query(collection(db, "users"), where("displayName", "==", username));
+    const q = query(
+      collection(db, "users"),
+      where("displayName", "==", username)
+    );
+
     try {
       const querySnapshot = await getDocs(q);
-      let found = false;
-
       querySnapshot.forEach((doc) => {
         setUser(doc.data());
-        found = true;
-        console.log(doc.id, " => ", doc.data());
       });
-
-      if (!found) {
-        setErr(true);
-        setUser(null);
-      } else {
-        setErr(false);
-      }
-    } catch (error) {
-      console.log(error);
+    } catch (err) {
       setErr(true);
-      setUser(null);
     }
   };
 
-  // Search on Enter key
   const handleKey = (e) => {
-    if (e.code === "Enter") handleSearch();
+    e.code === "Enter" && handleSearch();
   };
 
-  // Initiate chat with selected user
   const handleSelect = async () => {
-    if (!user) return;
-
-    const combinedId = currentUser.uid > user.uid 
-      ? currentUser.uid + user.uid 
-      : user.uid + currentUser.uid;
-
+    //check whether the group(chats in firestore) exists, if not create
+    const combinedId =
+      currentUser.uid > user.uid
+        ? currentUser.uid + user.uid
+        : user.uid + currentUser.uid;
     try {
-      const chatRef = doc(db, "chats", combinedId);
-      const chatSnap = await getDoc(chatRef);
+      const res = await getDoc(doc(db, "chats", combinedId));
 
-      // If chat does not exist, create it
-      if (!chatSnap.exists()) {
-        await setDoc(chatRef, { messages: [] });
+      if (!res.exists()) {
+        //create a chat in chats collection
+        await setDoc(doc(db, "chats", combinedId), { messages: [] });
+
+        //create user chats
+        await updateDoc(doc(db, "userChats", currentUser.uid), {
+          [combinedId + ".userInfo"]: {
+            uid: user.uid,
+            displayName: user.displayName,
+          },
+          [combinedId + ".date"]: serverTimestamp(),
+        });
+
+        await updateDoc(doc(db, "userChats", user.uid), {
+          [combinedId + ".userInfo"]: {
+            uid: currentUser.uid,
+            displayName: currentUser.displayName,
+          },
+          [combinedId + ".date"]: serverTimestamp(),
+        });
       }
+    } catch (err) {}
 
-      // Here you could also update userChats if you have a structure for that
-      console.log("Chat ready with:", user.displayName);
-
-      // Optionally, reset search input
-      setUser(null);
-      setUsername("");
-    } catch (error) {
-      console.log(error);
-    }
+    setUser(null);
+    setUsername("")
   };
 
   return (
